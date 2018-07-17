@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  dokuwiki:
+    image: ianculovici/minimal-dokuwiki:latest
+    container_name: "mywiki"
+#    volumes:
+#        - ./dokuwiki-data:/dokuwiki
+#    restart: always
+    ports:
+        - "7080:80"
+
