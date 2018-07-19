@@ -1,11 +1,11 @@
 FROM alpine:latest
 
-MAINTAINER ianculovici 
+LABEL maintainer ianculovici 
 
 ENV TIMEZONE		America/Chicago
 ENV DW_VERSION 		2018-04-22a
 
-RUN apk --update add nginx php7 php7-fpm php7-opcache php7-session php7-json php7-pdo_sqlite curl supervisor && \
+RUN apk --update add nginx php7 php7-fpm php7-opcache php7-session php7-json php7-pdo_sqlite php7-openssl curl supervisor && \
 	apk add --update tzdata && \
 	cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
 	echo "${TIMEZONE}" > /etc/timezone 
