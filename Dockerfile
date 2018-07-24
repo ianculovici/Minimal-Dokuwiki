@@ -10,7 +10,7 @@ RUN apk --update add nginx php7 php7-fpm php7-opcache php7-session php7-json php
 	cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
 	echo "${TIMEZONE}" > /etc/timezone 
 
-COPY default.conf /etc/nginx/conf.d/
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 
 RUN wget -O /tmp/dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-${DW_VERSION}.tgz
 RUN cd / && tar xzf /tmp/dokuwiki.tgz && mv dokuwiki-${DW_VERSION} dokuwiki && rm -f /tmp/dokuwiki.tgz
