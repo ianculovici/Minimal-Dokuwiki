@@ -15,10 +15,11 @@ COPY nginx-default.conf /etc/nginx/conf.d/default.conf
 RUN wget -O /tmp/dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-${DW_VERSION}.tgz
 RUN cd / && tar xzf /tmp/dokuwiki.tgz && mv dokuwiki-${DW_VERSION} dokuwiki && rm -f /tmp/dokuwiki.tgz
 
-RUN sed -i 's#user = nobody#user = nginx#' /etc/php7/php-fpm.d/www.conf && \
-	sed -i 's#group = nobody#group = nginx#' /etc/php7/php-fpm.d/www.conf && \
+RUN useradd -u 7007 dokuwiki
+RUN sed -i 's#user = nobody#user = dokuwiki#' /etc/php7/php-fpm.d/www.conf && \
+	sed -i 's#group = nobody#group = dokuwiki#' /etc/php7/php-fpm.d/www.conf && \
 	mkdir /run/nginx/ && \
-	chown -R nginx:nginx /dokuwiki
+	chown -R dokuwiki:dokuwiki /dokuwiki
 
 RUN apk del tzdata && \
 	rm -rf /var/cache/apk/*
