@@ -1,35 +1,41 @@
-FROM alpine:latest
+FROM php:8.1-fpm
 
-LABEL maintainer ianculovici
+# Install additional dependencies for the script and SQLite support
+RUN apt-get update && apt-get install -y \
+    bash \
+    sqlite3 \
+    libsqlite3-dev \
+    tzdata \
+    wget \
+    tar \
+    gzip \
+    && docker-php-ext-install pdo pdo_sqlite \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV TIMEZONE            America/Chicago
-ENV DW_VERSION          2020-07-29
+# Set working directory
+WORKDIR /app
 
-RUN apk --update add nginx php7 php7-fpm php7-opcache php7-session php7-json php7-pdo_sqlite php7-openssl curl supervisor && \
-        apk add --update tzdata && \
-        cp /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && \
-        echo "${TIMEZONE}" > /etc/timezone
+# Configure timezone (will be set at runtime)
+ENV TZ=UTC
 
-COPY nginx-default.conf /etc/nginx/http.d/default.conf
+# Copy upgrade script, restore script, and PHP configuration
+COPY upgrade.sh /usr/local/bin/upgrade.sh
+COPY restore.sh /usr/local/bin/restore.sh
+COPY php-dokuwiki.ini /usr/local/etc/php/conf.d/dokuwiki.ini
+RUN chmod +x /usr/local/bin/upgrade.sh /usr/local/bin/restore.sh
 
-RUN wget -O /tmp/dokuwiki.tgz https://download.dokuwiki.org/src/dokuwiki/dokuwiki-${DW_VERSION}.tgz
-RUN cd / && tar xzf /tmp/dokuwiki.tgz && mv dokuwiki-${DW_VERSION} dokuwiki && rm -f /tmp/dokuwiki.tgz
+# Ensure www-data user exists with correct UID/GID
+RUN usermod -u 1000 www-data && \
+    groupmod -g 1000 www-data
 
-#RUN addgroup -g 907 dokuwiki;
-RUN adduser -u 907 -D dokuwiki
-RUN sed -i 's#user nginx#user dokuwiki#' /etc/nginx/nginx.conf
-RUN sed -i 's#user = nobody#user = dokuwiki#' /etc/php7/php-fpm.d/www.conf && \
-        sed -i 's#group = nobody#group = dokuwiki#' /etc/php7/php-fpm.d/www.conf && \
-        mkdir -p /run/nginx/ && \
-        chown -R dokuwiki:dokuwiki /dokuwiki
+# PHP configuration is handled by the dedicated config file
 
-RUN apk del tzdata && \
-        rm -rf /var/cache/apk/*
+# Create cache and backup directories
+RUN mkdir -p /app/cache /app/backups
 
-EXPOSE 80
-VOLUME  /dokuwiki
-WORKDIR /dokuwiki
+# Ensure permissions are correct
+RUN chown -R www-data:www-data /app
 
-COPY supervisord.conf /etc
-
-CMD ["/usr/bin/supervisord"]
+# Run upgrade script on container start
+CMD ["/usr/local/bin/upgrade.sh"]

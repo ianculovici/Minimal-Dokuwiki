@@ -1,0 +1,6 @@
+app/app-data/
+app/backups/
+app/cache/
+.vscode/
+.env
+.DS_Store

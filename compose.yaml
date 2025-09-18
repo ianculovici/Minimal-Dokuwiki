@@ -1,0 +1,27 @@
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "11180:80"
+    volumes:
+      - ./app/app-data:/app/app-data
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - dokuwiki-php
+    restart: unless-stopped
+
+  dokuwiki-php:
+    image: ianculovici/minimal-dokuwiki:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app/app-data:/app/app-data
+      - ./app/cache:/app/cache
+      - ./app/backups:/app/backups
+    environment:
+      - VENDOR_VERSION=${VENDOR_VERSION:-2024.2.6.b}
+      - BACKUP_RETENTION=${BACKUP_RETENTION:-3}
+      - TZ=${TZ:-UTC}
+    restart: unless-stopped
+

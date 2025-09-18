@@ -1,34 +1,73 @@
 # Minimal-Dokuwiki
 
-## Summary
+A simple, lightweight DokuWiki setup with Docker, featuring automatic upgrades and SQLite support.
 
-Simple dokuwiki with alpine, nginx, and php-fpm7.
+## Quick Start
 
-## Description
+### Option 1: Use Pre-built Image (Recommended)
 
-You can create a very simple personal or organization knowledge base with a minimal footprint with docker.
+1. **Clone and configure:**
+   ```bash
+   git clone <repository>
+   cd Minimal-Dokuwiki
+   cp config.env.example .env
+   ```
 
-This is an image I created that user Alpine Linux (a very small footprint OS), Nginx, and PHP 7 (php-fpm). Services are managed by supervisord.
+2. **Set your desired DokuWiki version:**
+   ```bash
+   echo "VENDOR_VERSION=2024.2.6.b" >> .env
+   ```
 
-Once you have docker setup (on Linux or Windows), get the image by running
+3. **Start the containers:**
+   ```bash
+   docker compose up
+   ```
 
-```docker
-docker pull ianculovici/minimal-dokuwiki
+### Option 2: Build from Source
+
+1. **Follow Option 1 steps 1-2**
+2. **Build and start:**
+   ```bash
+   docker compose up --build
+   ```
+
+### Access DokuWiki
+- URL: `http://localhost:11180`
+- Default login: `admin` / `admin`
+
+## Features
+
+- **Automatic Upgrades**: Safe upgrade system with automatic backups
+- **SQLite Support**: Built-in database for user authentication
+- **Timezone Support**: Configurable via environment variables
+- **Lightweight**: Minimal resource footprint
+- **Production Ready**: Proper file permissions and error handling
+
+## Configuration
+
+Edit `.env` to customize:
+
+```bash
+# DokuWiki version (semantic versioning: YYYY.M.D.b)
+VENDOR_VERSION=2024.2.6.b
+
+# Number of backups to keep
+BACKUP_RETENTION=3
+
+# Timezone
+TZ=UTC
 ```
 
-You can use `docker-compose` to run the container. Here is a sample `docker-compose.yml` file:
+## Upgrading
 
-```json
-version: '2'
-services:
-  dokuwiki:
-    image: ianculovici/minimal-dokuwiki:latest
-    container_name: "mywiki"
-   volumes:
-     - ./dokuwiki-data:/dokuwiki
-   restart: always
-    ports:
-      - "7080:80"
-```
+To upgrade to a new DokuWiki version:
 
-All files to manually build the image are available on GitHub.
+1. Update `VENDOR_VERSION` in `.env`
+2. Run `docker compose up --build`
+
+The system will automatically download, backup, and install the new version.
+
+## Documentation
+
+- [Upgrade System Guide](UPGRADE_SYSTEM.md) - Detailed upgrade documentation
+- [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
