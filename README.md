@@ -43,12 +43,26 @@ A simple, lightweight DokuWiki setup with Docker, featuring automatic upgrades a
 - **Lightweight**: Minimal resource footprint
 - **Production Ready**: Proper file permissions and error handling
 
+## Version Format
+
+DokuWiki uses a specific version format. To find the correct version string:
+
+1. Visit [DokuWiki Downloads](https://download.dokuwiki.org/)
+2. Look for the version string in the format: `YYYY-MM-DD "Release Name"`
+3. Convert to our format: `YYYY.M.D.b`
+
+**Example:**
+- DokuWiki shows: `2024-02-06b`
+- Use in config: `VENDOR_VERSION=2024.2.6.b`
+
 ## Configuration
 
 Edit `.env` to customize:
 
 ```bash
 # DokuWiki version (semantic versioning: YYYY.M.D.b)
+# Format: YYYY = Year, M = Month, D = Day, b = Build/Release
+# Example: 2024.2.6.b = February 6, 2024 release
 VENDOR_VERSION=2024.2.6.b
 
 # Number of backups to keep

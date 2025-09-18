@@ -7,10 +7,10 @@ services:
       - ./app/app-data:/app/app-data
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
-      - dokuwiki-php
+      - php
     restart: unless-stopped
 
-  dokuwiki-php:
+  php:
     image: ianculovici/minimal-dokuwiki:latest
     build:
       context: .
